@@ -1,3 +1,5 @@
+using Infiltrator
+
 _nrow(df::AbstractDataFrame) = nrow(df)
 _nrow(x::NamedTuple{<:Any, <:Tuple{Vararg{AbstractVector}}}) =
     isempty(x) ? 0 : length(x[1])
@@ -102,7 +104,8 @@ function fill_row!(row, outcols::NTuple{N, AbstractVector},
         val = row[j]
         S = typeof(val)
         T = eltype(col)
-        if S <: T || promote_type(S, T) <: T
+        if S <: T || promote_type(S, T) <: T ||
+           (S <: AbstractArray && T <: AbstractArray && eltype(S) <: eltype(T))
             col[i] = val
         else
             return j
